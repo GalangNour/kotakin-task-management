@@ -1,11 +1,11 @@
 <script setup>
-import { ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import Avatar from '@/Components/Avatar.vue';
 import Badge from '@/Components/Badge.vue';
 import AppButton from '@/Components/AppButton.vue';
 import SearchInput from '@/Components/SearchInput.vue';
+import { useLiveSearch } from '@/composables/useLiveSearch';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -16,15 +16,7 @@ const props = defineProps({
 const page = usePage();
 const currentUserId = page.props.auth.user.id;
 
-const search = ref(props.filters.search ?? '');
-
-const applySearch = () => {
-    router.get(
-        route('users.index'),
-        { search: search.value || undefined },
-        { preserveState: true, replace: true },
-    );
-};
+const search = useLiveSearch(route('users.index'), props.filters.search);
 
 const destroy = (user) => {
     if (confirm(`Hapus user "${user.name}"?`)) {
@@ -38,7 +30,7 @@ const destroy = (user) => {
 
     <AuthenticatedLayout eyebrow="Kelola" title="User Account">
         <template #actions>
-            <SearchInput v-model="search" placeholder="Cari nama/email..." @keyup.enter="applySearch" />
+            <SearchInput v-model="search" placeholder="Cari nama/email..." />
             <AppButton variant="primary" :href="route('users.create')">+ Tambah User</AppButton>
         </template>
 

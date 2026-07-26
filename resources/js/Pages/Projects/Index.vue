@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import Badge from '@/Components/Badge.vue';
@@ -7,6 +6,7 @@ import Avatar from '@/Components/Avatar.vue';
 import ProgressBar from '@/Components/ProgressBar.vue';
 import AppButton from '@/Components/AppButton.vue';
 import SearchInput from '@/Components/SearchInput.vue';
+import { useLiveSearch } from '@/composables/useLiveSearch';
 import { Head, Link, router } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -14,15 +14,7 @@ const props = defineProps({
     filters: Object,
 });
 
-const search = ref(props.filters.search ?? '');
-
-const applySearch = () => {
-    router.get(
-        route('projects.index'),
-        { search: search.value || undefined },
-        { preserveState: true, replace: true },
-    );
-};
+const search = useLiveSearch(route('projects.index'), props.filters.search);
 
 const destroy = (project) => {
     if (confirm(`Hapus project "${project.name}"? Semua task di dalamnya ikut terhapus.`)) {
@@ -44,7 +36,7 @@ const progressPct = (project) =>
 
     <AuthenticatedLayout eyebrow="Kelola" title="Projects">
         <template #actions>
-            <SearchInput v-model="search" placeholder="Cari project..." @keyup.enter="applySearch" />
+            <SearchInput v-model="search" placeholder="Cari project..." />
             <AppButton variant="secondary" :href="route('project-categories.index')">Kelola Kategori</AppButton>
             <AppButton variant="primary" :href="route('projects.create')">+ Tambah Project</AppButton>
         </template>

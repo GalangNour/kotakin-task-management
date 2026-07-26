@@ -1,9 +1,9 @@
 <script setup>
-import { ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import AppButton from '@/Components/AppButton.vue';
 import SearchInput from '@/Components/SearchInput.vue';
+import { useLiveSearch } from '@/composables/useLiveSearch';
 import { Head, Link, router } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -11,15 +11,7 @@ const props = defineProps({
     filters: Object,
 });
 
-const search = ref(props.filters.search ?? '');
-
-const applySearch = () => {
-    router.get(
-        route('project-categories.index'),
-        { search: search.value || undefined },
-        { preserveState: true, replace: true },
-    );
-};
+const search = useLiveSearch(route('project-categories.index'), props.filters.search);
 
 const destroy = (category) => {
     if (confirm(`Hapus kategori "${category.name}"?`)) {
@@ -33,7 +25,7 @@ const destroy = (category) => {
 
     <AuthenticatedLayout eyebrow="Kelola" title="Kategori Project">
         <template #actions>
-            <SearchInput v-model="search" placeholder="Cari kategori..." @keyup.enter="applySearch" />
+            <SearchInput v-model="search" placeholder="Cari kategori..." />
             <AppButton variant="primary" :href="route('project-categories.create')">+ Tambah Kategori</AppButton>
         </template>
 

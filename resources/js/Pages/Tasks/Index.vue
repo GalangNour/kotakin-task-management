@@ -1,12 +1,13 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ProjectDetailTabs from '@/Components/ProjectDetailTabs.vue';
 import Badge from '@/Components/Badge.vue';
 import Avatar from '@/Components/Avatar.vue';
 import AppButton from '@/Components/AppButton.vue';
 import SearchInput from '@/Components/SearchInput.vue';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { useLiveSearch } from '@/composables/useLiveSearch';
+import { Head, Link } from '@inertiajs/vue3';
 
 const props = defineProps({
     project: Object,
@@ -14,15 +15,7 @@ const props = defineProps({
     filters: Object,
 });
 
-const search = ref(props.filters.search ?? '');
-
-const applySearch = () => {
-    router.get(
-        route('projects.tasks.index', props.project.id),
-        { search: search.value || undefined },
-        { preserveState: true, replace: true },
-    );
-};
+const search = useLiveSearch(route('projects.tasks.index', props.project.id), props.filters.search);
 
 const COLUMN_DEFS = [
     { key: 'todo', label: 'To Do' },
@@ -53,7 +46,7 @@ const dueLabel = (task) => {
 
     <AuthenticatedLayout eyebrow="Project" title="Task">
         <template #actions>
-            <SearchInput v-model="search" placeholder="Cari task..." @keyup.enter="applySearch" />
+            <SearchInput v-model="search" placeholder="Cari task..." />
         </template>
 
         <ProjectDetailTabs :project="project" active="tasks">

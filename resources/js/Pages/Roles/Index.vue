@@ -1,10 +1,10 @@
 <script setup>
-import { ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import Badge from '@/Components/Badge.vue';
 import AppButton from '@/Components/AppButton.vue';
 import SearchInput from '@/Components/SearchInput.vue';
+import { useLiveSearch } from '@/composables/useLiveSearch';
 import { Head, Link, router } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -12,15 +12,7 @@ const props = defineProps({
     filters: Object,
 });
 
-const search = ref(props.filters.search ?? '');
-
-const applySearch = () => {
-    router.get(
-        route('roles.index'),
-        { search: search.value || undefined },
-        { preserveState: true, replace: true },
-    );
-};
+const search = useLiveSearch(route('roles.index'), props.filters.search);
 
 const destroy = (role) => {
     if (confirm(`Hapus role "${role.name}"?`)) {
@@ -34,7 +26,7 @@ const destroy = (role) => {
 
     <AuthenticatedLayout eyebrow="Kelola" title="Roles">
         <template #actions>
-            <SearchInput v-model="search" placeholder="Cari role..." @keyup.enter="applySearch" />
+            <SearchInput v-model="search" placeholder="Cari role..." />
             <AppButton variant="primary" :href="route('roles.create')">+ Tambah Role</AppButton>
         </template>
 

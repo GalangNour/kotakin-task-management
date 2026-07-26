@@ -49,6 +49,9 @@ const formatValue = (value) => {
 
             <div class="flex-1 pb-1">
                 <div class="mb-1.5 flex items-center gap-2">
+                    <span v-if="audit.subject_type === 'task'" class="text-xs font-semibold text-secondary">
+                        Task &middot; {{ audit.subject_label ?? 'tanpa judul' }}
+                    </span>
                     <Badge
                         :label="(eventMeta[audit.event] ?? eventMeta.updated).label"
                         :tone="(eventMeta[audit.event] ?? eventMeta.updated).tone"

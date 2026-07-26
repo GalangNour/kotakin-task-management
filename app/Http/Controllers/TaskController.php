@@ -22,8 +22,7 @@ class TaskController extends Controller
                 $query->where('title', 'like', "%{$search}%");
             })
             ->latest()
-            ->paginate(10)
-            ->withQueryString();
+            ->get();
 
         return Inertia::render('Tasks/Index', [
             'project' => $project,

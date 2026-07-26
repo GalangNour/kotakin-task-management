@@ -2,9 +2,9 @@
 import { ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import DangerButton from '@/Components/DangerButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import Badge from '@/Components/Badge.vue';
+import AppButton from '@/Components/AppButton.vue';
+import SearchInput from '@/Components/SearchInput.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -32,82 +32,46 @@ const destroy = (role) => {
 <template>
     <Head title="Role Management" />
 
-    <AuthenticatedLayout>
-        <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                Role Management
-            </h2>
+    <AuthenticatedLayout eyebrow="Kelola" title="Roles">
+        <template #actions>
+            <SearchInput v-model="search" placeholder="Cari role..." @keyup.enter="applySearch" />
+            <AppButton variant="primary" :href="route('roles.create')">+ Tambah Role</AppButton>
         </template>
 
-        <div class="py-12">
-            <div class="mx-auto max-w-7xl space-y-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between">
-                    <TextInput
-                        v-model="search"
-                        type="text"
-                        placeholder="Cari role..."
-                        class="w-64"
-                        @keyup.enter="applySearch"
-                    />
-                    <Link :href="route('roles.create')">
-                        <PrimaryButton>Tambah Role</PrimaryButton>
-                    </Link>
+        <div class="grid gap-[18px]" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr))">
+            <div
+                v-for="role in roles.data"
+                :key="role.id"
+                class="rounded-card border border-border bg-white p-5"
+            >
+                <div class="mb-2.5 flex items-center justify-between">
+                    <span class="text-base font-extrabold">{{ role.name }}</span>
+                    <Badge :label="role.is_active ? 'Aktif' : 'Nonaktif'" :tone="role.is_active ? 'success' : 'neutral'" />
                 </div>
-
-                <div class="overflow-x-auto rounded-lg bg-white shadow dark:bg-gray-800">
-                    <table class="w-full text-left text-sm">
-                        <thead class="border-b border-gray-200 text-xs uppercase text-gray-500 dark:border-gray-700 dark:text-gray-400">
-                            <tr>
-                                <th class="px-4 py-3">Nama</th>
-                                <th class="px-4 py-3">Status</th>
-                                <th class="px-4 py-3">Permissions</th>
-                                <th class="px-4 py-3 text-right">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                            <tr v-for="role in roles.data" :key="role.id">
-                                <td class="px-4 py-3 font-medium text-gray-800 dark:text-gray-200">
-                                    {{ role.name }}
-                                </td>
-                                <td class="px-4 py-3">
-                                    <span
-                                        class="rounded-full px-2 py-0.5 text-xs font-semibold"
-                                        :class="role.is_active
-                                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                                            : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'"
-                                    >
-                                        {{ role.is_active ? 'Aktif' : 'Nonaktif' }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3 text-gray-500 dark:text-gray-400">
-                                    {{ (role.permissions ?? []).join(', ') || '-' }}
-                                </td>
-                                <td class="px-4 py-3 text-right">
-                                    <Link
-                                        :href="route('roles.edit', role.id)"
-                                        class="me-3 text-indigo-600 hover:underline dark:text-indigo-400"
-                                    >
-                                        Edit
-                                    </Link>
-                                    <button
-                                        @click="destroy(role)"
-                                        class="text-red-600 hover:underline dark:text-red-400"
-                                    >
-                                        Hapus
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr v-if="roles.data.length === 0">
-                                <td colspan="4" class="px-4 py-6 text-center text-gray-400">
-                                    Belum ada role.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="mb-3.5 text-xs text-secondary">{{ role.users_count }} user</div>
+                <div class="mb-4 flex flex-wrap gap-1.5">
+                    <span
+                        v-for="perm in role.permissions ?? []"
+                        :key="perm"
+                        class="rounded-chip bg-neutral-tint px-2.5 py-1 text-xs text-ink/80"
+                    >
+                        {{ perm }}
+                    </span>
+                    <span v-if="(role.permissions ?? []).length === 0" class="text-xs text-secondary">
+                        Tidak ada permission.
+                    </span>
                 </div>
-
-                <Pagination :links="roles.links" />
+                <div class="flex items-center gap-3.5 text-[13px] font-semibold">
+                    <Link :href="route('roles.edit', role.id)" class="text-ink hover:text-accent">Edit Role</Link>
+                    <button @click="destroy(role)" class="text-danger hover:underline">Hapus</button>
+                </div>
             </div>
+
+            <p v-if="roles.data.length === 0" class="col-span-full py-10 text-center text-sm text-secondary">
+                Belum ada role.
+            </p>
         </div>
+
+        <Pagination :links="roles.links" />
     </AuthenticatedLayout>
 </template>

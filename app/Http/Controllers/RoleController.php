@@ -15,6 +15,7 @@ class RoleController extends Controller
     public function index(Request $request): Response
     {
         $roles = Role::query()
+            ->withCount('users')
             ->when($request->string('search')->toString(), function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%");
             })

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\TasksExport;
 use App\Http\Requests\StoreTaskImportHeadersRequest;
 use App\Http\Requests\StoreTaskImportRequest;
 use App\Jobs\ImportTasksJob;
 use App\Models\Project;
+use App\Models\TaskExport;
 use App\Models\TaskImport;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -18,9 +20,14 @@ class TaskImportController extends Controller
 {
     public function create(Project $project): Response
     {
-        return Inertia::render('Tasks/Import', [
+        return Inertia::render('Tasks/ImportExport', [
             'project' => $project,
             'systemFields' => ImportTasksJob::SYSTEM_FIELDS,
+            'availableColumns' => TasksExport::AVAILABLE_COLUMNS,
+            'exportHistory' => TaskExport::where('project_id', $project->id)->latest()->limit(10)->get(),
+            'activeTab' => 'import',
+            'activeImport' => null,
+            'activeExport' => null,
         ]);
     }
 
@@ -65,8 +72,16 @@ class TaskImportController extends Controller
 
     public function show(TaskImport $taskImport): Response
     {
-        return Inertia::render('Tasks/ImportStatus', [
-            'import' => $taskImport,
+        $project = $taskImport->project;
+
+        return Inertia::render('Tasks/ImportExport', [
+            'project' => $project,
+            'systemFields' => ImportTasksJob::SYSTEM_FIELDS,
+            'availableColumns' => TasksExport::AVAILABLE_COLUMNS,
+            'exportHistory' => TaskExport::where('project_id', $project->id)->latest()->limit(10)->get(),
+            'activeTab' => 'import',
+            'activeImport' => $taskImport,
+            'activeExport' => null,
         ]);
     }
 

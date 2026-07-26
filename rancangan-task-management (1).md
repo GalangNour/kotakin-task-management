@@ -14,9 +14,10 @@
 - [x] Import/Export Excel + Queue (poin 4) — target entity **Task** (fit paling natural: bulk import backlog, export laporan). `TasksExport` (dynamic column checklist via `WithMapping`), `ExportTasksJob`/`ImportTasksJob` (queue), mapping kolom dinamis saat import (FK `project`/`assignee` di-resolve dari konteks project + email, bukan UUID mentah), tabel `task_exports`/`task_imports` buat tracking status + polling. Tested end-to-end lewat browser beneran (upload CSV 3 baris → semua ke-import benar, termasuk resolve assignee by email).
 
 - [x] Landing page custom (hero + fitur, ganti boilerplate Breeze/Laracasts links)
+- [x] Push ke GitHub — https://github.com/GalangNour/kotakin-task-management (README setup steps, `.env` & `database.sqlite` gak ke-commit)
+- [x] **UI/UX Redesign** (sesuai `design_handoff_ui_redesign/`) — sidebar shell (ganti top nav), Dashboard baru (stat card + progress + overdue + activity feed dari audits), Projects/Roles jadi grid card, Tasks jadi kanban 3 kolom, Users jadi list card, Project Detail (Task/Detail/History tab konsisten), AuditTrail jadi vertical timeline, Import/Export digabung 1 halaman 2 tab (stepper 4 langkah). Design token: warna oklch + font Manrope. Logic (controller/validasi/job/route) gak diubah, cuma presentasi + beberapa query tambahan (`withCount`, dst) buat data yang dibutuhin tampilan baru. Tested lengkap via Playwright — nol console/HTTP error.
 
-**Belum:**
-- [ ] Deploy/packaging buat presentasi
+**Belum:** —
 
 **Catatan implementasi (beda dari asumsi awal rancangan):**
 - Dev server jalan di port **8001**, bukan 8000 (8000 kepakai project lain di mesin yang sama)
@@ -24,6 +25,8 @@
 - Route `show` di-exclude dari semua resource (gak ada halaman detail terpisah, langsung Edit)
 - Import/Export scoped per-project (`/projects/{project}/tasks/export|import`), bukan global — konsisten sama struktur nested task yang udah ada
 - **Perlu `php artisan queue:work` jalan** biar job export/import diproses (queue driver `database`, gak auto-jalan tanpa worker)
+- Nav sidebar redesign 4 item (bukan 5 sesuai handoff) — item "Import/Export" didrop karena gak ada route global (scoped per-project), akses tetap ada via tombol di halaman Task
+- Dark mode gak diimplementasi di halaman hasil redesign (fallback ke light) — desain handoff cuma kasih token light-only
 
 ---
 

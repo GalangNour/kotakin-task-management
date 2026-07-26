@@ -3,13 +3,13 @@ import { ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import Textarea from '@/Components/Textarea.vue';
 import SelectInput from '@/Components/SelectInput.vue';
+import AppButton from '@/Components/AppButton.vue';
+import Badge from '@/Components/Badge.vue';
 import AuditTrail from '@/Components/AuditTrail.vue';
-import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
     task: Object,
@@ -58,202 +58,157 @@ const deleteAttachment = (attachment) => {
         router.delete(route('attachments.destroy', attachment.id));
     }
 };
+
+const deleteTask = () => {
+    if (confirm(`Hapus task "${props.task.title}"?`)) {
+        router.delete(route('tasks.destroy', props.task.id));
+    }
+};
 </script>
 
 <template>
     <Head title="Edit Task" />
 
-    <AuthenticatedLayout>
-        <template #header>
-            <div class="flex items-center justify-between">
-                <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    Edit Task — {{ task.title }}
-                </h2>
-                <Link :href="route('projects.tasks.index', task.project_id)">
-                    <SecondaryButton>Kembali ke Task</SecondaryButton>
-                </Link>
-            </div>
+    <AuthenticatedLayout eyebrow="Project" title="Task">
+        <template #actions>
+            <AppButton variant="secondary" :href="route('projects.tasks.index', task.project_id)">Kembali ke Task</AppButton>
         </template>
 
-        <div class="py-12">
-            <div class="mx-auto max-w-xl space-y-4 sm:px-6 lg:px-8">
-                <div class="flex gap-2 border-b border-gray-200 dark:border-gray-700">
-                    <button
-                        class="px-3 py-2 text-sm font-medium"
-                        :class="activeTab === 'form'
-                            ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400'
-                            : 'text-gray-500 dark:text-gray-400'"
-                        @click="activeTab = 'form'"
-                    >
-                        Detail
-                    </button>
-                    <button
-                        class="px-3 py-2 text-sm font-medium"
-                        :class="activeTab === 'attachments'
-                            ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400'
-                            : 'text-gray-500 dark:text-gray-400'"
-                        @click="activeTab = 'attachments'"
-                    >
-                        Attachments ({{ task.attachments.length }})
-                    </button>
-                    <button
-                        class="px-3 py-2 text-sm font-medium"
-                        :class="activeTab === 'audit'
-                            ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400'
-                            : 'text-gray-500 dark:text-gray-400'"
-                        @click="activeTab = 'audit'"
-                    >
-                        History &amp; Audit Trail
-                    </button>
-                </div>
+        <div class="mb-5 flex items-center justify-between">
+            <div class="text-[22px] font-extrabold tracking-tight">{{ task.title }}</div>
+            <button class="text-[13px] font-semibold text-danger hover:underline" @click="deleteTask">Hapus Task</button>
+        </div>
 
-                <div v-if="activeTab === 'form'" class="bg-white p-6 shadow sm:rounded-lg dark:bg-gray-800">
-                    <form @submit.prevent="submit" class="space-y-4">
-                        <div>
-                            <InputLabel for="title" value="Judul Task" />
-                            <TextInput
-                                id="title"
-                                v-model="form.title"
-                                class="mt-1 block w-full"
-                                required
-                                autofocus
-                            />
-                            <InputError class="mt-2" :message="form.errors.title" />
-                        </div>
+        <div class="max-w-[640px] space-y-5">
+            <div class="flex gap-1 border-b border-border">
+                <button
+                    class="px-3.5 py-2.5 text-[13px] font-bold transition"
+                    :class="activeTab === 'form' ? 'border-b-2 border-accent text-accent-dark' : 'border-b-2 border-transparent text-secondary hover:text-ink'"
+                    @click="activeTab = 'form'"
+                >
+                    Detail
+                </button>
+                <button
+                    class="px-3.5 py-2.5 text-[13px] font-bold transition"
+                    :class="activeTab === 'attachments' ? 'border-b-2 border-accent text-accent-dark' : 'border-b-2 border-transparent text-secondary hover:text-ink'"
+                    @click="activeTab = 'attachments'"
+                >
+                    Attachments ({{ task.attachments.length }})
+                </button>
+                <button
+                    class="px-3.5 py-2.5 text-[13px] font-bold transition"
+                    :class="activeTab === 'audit' ? 'border-b-2 border-accent text-accent-dark' : 'border-b-2 border-transparent text-secondary hover:text-ink'"
+                    @click="activeTab = 'audit'"
+                >
+                    History &amp; Audit Trail
+                </button>
+            </div>
 
-                        <div>
-                            <InputLabel for="description" value="Deskripsi" />
-                            <Textarea id="description" v-model="form.description" class="mt-1 block w-full" rows="3" />
-                            <InputError class="mt-2" :message="form.errors.description" />
-                        </div>
+            <div v-if="activeTab === 'form'" class="rounded-card border border-border bg-white p-6">
+                <form @submit.prevent="submit" class="space-y-4">
+                    <div>
+                        <InputLabel for="title" value="Judul Task" class="!text-xs !font-semibold !text-secondary" />
+                        <TextInput id="title" v-model="form.title" class="mt-1 block w-full" required autofocus />
+                        <InputError class="mt-1" :message="form.errors.title" />
+                    </div>
 
+                    <div>
+                        <InputLabel for="description" value="Deskripsi" class="!text-xs !font-semibold !text-secondary" />
+                        <Textarea id="description" v-model="form.description" class="mt-1 block w-full" rows="3" />
+                        <InputError class="mt-1" :message="form.errors.description" />
+                    </div>
+
+                    <div>
+                        <InputLabel for="assigned_to" value="Assignee" class="!text-xs !font-semibold !text-secondary" />
+                        <SelectInput id="assigned_to" v-model="form.assigned_to" class="mt-1 block w-full">
+                            <option value="">- Belum ditugaskan -</option>
+                            <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+                        </SelectInput>
+                        <InputError class="mt-1" :message="form.errors.assigned_to" />
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <InputLabel for="assigned_to" value="Assignee" />
-                            <SelectInput id="assigned_to" v-model="form.assigned_to" class="mt-1 block w-full">
-                                <option value="">- Belum ditugaskan -</option>
-                                <option v-for="user in users" :key="user.id" :value="user.id">
-                                    {{ user.name }}
-                                </option>
+                            <InputLabel for="status" value="Status" class="!text-xs !font-semibold !text-secondary" />
+                            <SelectInput id="status" v-model="form.status" class="mt-1 block w-full">
+                                <option value="todo">Todo</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="done">Done</option>
                             </SelectInput>
-                            <InputError class="mt-2" :message="form.errors.assigned_to" />
+                            <InputError class="mt-1" :message="form.errors.status" />
                         </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <InputLabel for="status" value="Status" />
-                                <SelectInput id="status" v-model="form.status" class="mt-1 block w-full">
-                                    <option value="todo">Todo</option>
-                                    <option value="in_progress">In Progress</option>
-                                    <option value="done">Done</option>
-                                </SelectInput>
-                                <InputError class="mt-2" :message="form.errors.status" />
-                            </div>
-                            <div>
-                                <InputLabel for="priority" value="Prioritas" />
-                                <SelectInput id="priority" v-model="form.priority" class="mt-1 block w-full">
-                                    <option value="low">Low</option>
-                                    <option value="medium">Medium</option>
-                                    <option value="high">High</option>
-                                </SelectInput>
-                                <InputError class="mt-2" :message="form.errors.priority" />
-                            </div>
-                        </div>
-
                         <div>
-                            <InputLabel for="due_date" value="Due Date" />
-                            <TextInput
-                                id="due_date"
-                                type="date"
-                                v-model="form.due_date"
-                                class="mt-1 block w-full"
-                            />
-                            <InputError class="mt-2" :message="form.errors.due_date" />
+                            <InputLabel for="priority" value="Prioritas" class="!text-xs !font-semibold !text-secondary" />
+                            <SelectInput id="priority" v-model="form.priority" class="mt-1 block w-full">
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                            </SelectInput>
+                            <InputError class="mt-1" :message="form.errors.priority" />
                         </div>
-
-                        <div class="flex items-center gap-3">
-                            <PrimaryButton :disabled="form.processing">Simpan</PrimaryButton>
-                        </div>
-                    </form>
-                </div>
-
-                <div v-else-if="activeTab === 'attachments'" class="space-y-4">
-                    <div class="bg-white p-6 shadow sm:rounded-lg dark:bg-gray-800">
-                        <InputLabel value="Upload File (100KB - 500KB)" />
-                        <div class="mt-2 flex items-center gap-3">
-                            <input
-                                ref="fileInput"
-                                type="file"
-                                class="text-sm text-gray-600 dark:text-gray-400"
-                                @change="uploadForm.file = $event.target.files[0]"
-                            />
-                            <PrimaryButton :disabled="uploadForm.processing || !uploadForm.file" @click="uploadAttachment">
-                                Upload
-                            </PrimaryButton>
-                        </div>
-                        <InputError class="mt-2" :message="uploadForm.errors.file" />
                     </div>
 
-                    <div class="overflow-x-auto rounded-lg bg-white shadow dark:bg-gray-800">
-                        <table class="w-full text-left text-sm">
-                            <thead class="border-b border-gray-200 text-xs uppercase text-gray-500 dark:border-gray-700 dark:text-gray-400">
-                                <tr>
-                                    <th class="px-4 py-3">File</th>
-                                    <th class="px-4 py-3">Ukuran</th>
-                                    <th class="px-4 py-3">Uploader</th>
-                                    <th class="px-4 py-3">Verifikasi</th>
-                                    <th class="px-4 py-3 text-right">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                                <tr v-for="attachment in task.attachments" :key="attachment.id">
-                                    <td class="px-4 py-3">
-                                        <a
-                                            :href="`/storage/${attachment.file_path}`"
-                                            target="_blank"
-                                            class="text-indigo-600 hover:underline dark:text-indigo-400"
-                                        >
-                                            {{ attachment.file_name }}
-                                        </a>
-                                    </td>
-                                    <td class="px-4 py-3 text-gray-500 dark:text-gray-400">
-                                        {{ attachment.file_size }} KB
-                                    </td>
-                                    <td class="px-4 py-3 text-gray-500 dark:text-gray-400">
-                                        {{ attachment.uploader?.name ?? '-' }}
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <button
-                                            class="rounded-full px-2 py-0.5 text-xs font-semibold"
-                                            :class="attachment.is_verified
-                                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                                                : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'"
-                                            @click="toggleVerified(attachment)"
-                                        >
-                                            {{ attachment.is_verified ? 'Terverifikasi' : 'Belum Verifikasi' }}
-                                        </button>
-                                    </td>
-                                    <td class="px-4 py-3 text-right">
-                                        <button
-                                            @click="deleteAttachment(attachment)"
-                                            class="text-red-600 hover:underline dark:text-red-400"
-                                        >
-                                            Hapus
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr v-if="task.attachments.length === 0">
-                                    <td colspan="5" class="px-4 py-6 text-center text-gray-400">
-                                        Belum ada attachment.
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div>
+                        <InputLabel for="due_date" value="Due Date" class="!text-xs !font-semibold !text-secondary" />
+                        <TextInput id="due_date" type="date" v-model="form.due_date" class="mt-1 block w-full" />
+                        <InputError class="mt-1" :message="form.errors.due_date" />
                     </div>
+
+                    <AppButton type="submit" variant="primary" :disabled="form.processing">Simpan</AppButton>
+                </form>
+            </div>
+
+            <div v-else-if="activeTab === 'attachments'" class="space-y-4">
+                <div class="rounded-card border border-border bg-white p-6">
+                    <InputLabel value="Upload File (100KB - 500KB)" class="!text-xs !font-semibold !text-secondary" />
+                    <div class="mt-2 flex items-center gap-3">
+                        <input
+                            ref="fileInput"
+                            type="file"
+                            class="text-sm text-secondary"
+                            @change="uploadForm.file = $event.target.files[0]"
+                        />
+                        <AppButton variant="primary" :disabled="uploadForm.processing || !uploadForm.file" @click="uploadAttachment">
+                            Upload
+                        </AppButton>
+                    </div>
+                    <InputError class="mt-2" :message="uploadForm.errors.file" />
                 </div>
 
-                <div v-else class="bg-white p-6 shadow sm:rounded-lg dark:bg-gray-800">
-                    <AuditTrail :audits="audits" />
+                <div class="overflow-hidden rounded-card border border-border bg-white">
+                    <div
+                        v-for="attachment in task.attachments"
+                        :key="attachment.id"
+                        class="flex items-center gap-4 border-b border-divider px-5 py-3.5 last:border-b-0"
+                    >
+                        <a
+                            :href="`/storage/${attachment.file_path}`"
+                            target="_blank"
+                            class="flex-1 text-[13px] font-bold text-accent hover:text-accent-dark"
+                        >
+                            {{ attachment.file_name }}
+                        </a>
+                        <span class="text-xs text-secondary">{{ attachment.file_size }} KB</span>
+                        <span class="text-xs text-secondary">{{ attachment.uploader?.name ?? '-' }}</span>
+                        <button @click="toggleVerified(attachment)">
+                            <Badge
+                                :label="attachment.is_verified ? 'Terverifikasi' : 'Belum Verifikasi'"
+                                :tone="attachment.is_verified ? 'success' : 'neutral'"
+                            />
+                        </button>
+                        <button @click="deleteAttachment(attachment)" class="text-[13px] font-semibold text-danger hover:underline">
+                            Hapus
+                        </button>
+                    </div>
+
+                    <p v-if="task.attachments.length === 0" class="py-8 text-center text-sm text-secondary">
+                        Belum ada attachment.
+                    </p>
                 </div>
+            </div>
+
+            <div v-else class="rounded-card border border-border bg-white p-6">
+                <AuditTrail :audits="audits" />
             </div>
         </div>
     </AuthenticatedLayout>

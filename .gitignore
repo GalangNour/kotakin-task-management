@@ -4,6 +4,7 @@
 .env.backup
 .env.production
 /database/*.sqlite
+/design_handoff_ui_redesign
 .phpactor.json
 .phpunit.result.cache
 /.fleet

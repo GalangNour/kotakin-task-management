@@ -12,6 +12,14 @@ class Role extends Model
 {
     use HasFactory, HasUuids, SoftDeletes;
 
+    public const AVAILABLE_PERMISSIONS = [
+        'project.manage' => 'Kelola Project',
+        'task.manage' => 'Kelola Task',
+        'user.manage' => 'Kelola User',
+        'role.manage' => 'Kelola Role',
+        'audit.view' => 'Lihat Audit Trail',
+    ];
+
     protected $fillable = [
         'name',
         'is_active',

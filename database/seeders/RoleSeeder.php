@@ -11,12 +11,12 @@ class RoleSeeder extends Seeder
     {
         Role::query()->firstOrCreate(
             ['name' => 'Administrator'],
-            ['is_active' => true, 'permissions' => ['*']]
+            ['is_active' => true, 'permissions' => array_keys(Role::AVAILABLE_PERMISSIONS)]
         );
 
         Role::query()->firstOrCreate(
             ['name' => 'Member'],
-            ['is_active' => true, 'permissions' => ['task.view', 'task.update']]
+            ['is_active' => true, 'permissions' => ['project.manage', 'task.manage', 'audit.view']]
         );
     }
 }

@@ -29,14 +29,8 @@ class UserController extends Controller
 
         return Inertia::render('Users/Index', [
             'users' => $users,
-            'filters' => $request->only('search'),
-        ]);
-    }
-
-    public function create(): Response
-    {
-        return Inertia::render('Users/Create', [
             'roles' => Role::query()->where('is_active', true)->get(['id', 'name']),
+            'filters' => $request->only('search'),
         ]);
     }
 
@@ -45,14 +39,6 @@ class UserController extends Controller
         User::create($request->validated());
 
         return redirect()->route('users.index')->with('success', 'User berhasil dibuat.');
-    }
-
-    public function edit(User $user): Response
-    {
-        return Inertia::render('Users/Edit', [
-            'user' => $user->load('role'),
-            'roles' => Role::query()->where('is_active', true)->get(['id', 'name']),
-        ]);
     }
 
     public function update(UpdateUserRequest $request, User $user): RedirectResponse

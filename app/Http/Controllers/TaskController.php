@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Project;
+use App\Models\ProjectCategory;
 use App\Models\Task;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -27,15 +29,9 @@ class TaskController extends Controller
         return Inertia::render('Tasks/Index', [
             'project' => $project,
             'tasks' => $tasks,
-            'filters' => $request->only('search'),
-        ]);
-    }
-
-    public function create(Project $project): Response
-    {
-        return Inertia::render('Tasks/Create', [
-            'project' => $project,
             'users' => User::query()->where('is_active', true)->get(['id', 'name']),
+            'categories' => ProjectCategory::all(['id', 'name']),
+            'filters' => $request->only('search'),
         ]);
     }
 
@@ -44,15 +40,6 @@ class TaskController extends Controller
         $project->tasks()->create($request->validated());
 
         return redirect()->route('projects.tasks.index', $project)->with('success', 'Task berhasil dibuat.');
-    }
-
-    public function edit(Task $task): Response
-    {
-        return Inertia::render('Tasks/Edit', [
-            'task' => $task->load(['project', 'assignee', 'attachments.uploader']),
-            'users' => User::query()->where('is_active', true)->get(['id', 'name']),
-            'audits' => $task->auditHistory()->with('user:id,name')->get(),
-        ]);
     }
 
     public function update(UpdateTaskRequest $request, Task $task): RedirectResponse
@@ -69,5 +56,13 @@ class TaskController extends Controller
         $task->delete();
 
         return redirect()->route('projects.tasks.index', $projectId)->with('success', 'Task berhasil dihapus.');
+    }
+
+    public function modalData(Task $task): JsonResponse
+    {
+        return response()->json([
+            'task' => $task->load(['assignee', 'attachments.uploader', 'comments.author']),
+            'audits' => $task->auditHistory()->with('user:id,name')->get(),
+        ]);
     }
 }

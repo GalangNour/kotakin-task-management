@@ -6,6 +6,7 @@ use App\Http\Controllers\ProjectCategoryController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TaskAttachmentController;
+use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaskExportController;
 use App\Http\Controllers\TaskImportController;
@@ -29,10 +30,14 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('roles', RoleController::class)->except('show');
+    Route::resource('roles', RoleController::class)->except(['show', 'create', 'edit']);
     Route::resource('project-categories', ProjectCategoryController::class)->except('show');
-    Route::resource('projects', ProjectController::class)->except('show');
-    Route::resource('projects.tasks', TaskController::class)->shallow()->except('show');
+    Route::get('projects/trashed', [ProjectController::class, 'trashed'])->name('projects.trashed');
+    Route::get('projects/trashed/{project}', [ProjectController::class, 'trashedShow'])->name('projects.trashed.show');
+    Route::resource('projects', ProjectController::class)->except(['show', 'create']);
+    Route::resource('projects.tasks', TaskController::class)->shallow()->except(['show', 'create', 'edit']);
+    Route::get('tasks/{task}/modal-data', [TaskController::class, 'modalData'])->name('tasks.modal-data');
+    Route::post('tasks/{task}/comments', [TaskCommentController::class, 'store'])->name('tasks.comments.store');
     Route::post('tasks/{task}/attachments', [TaskAttachmentController::class, 'store'])->name('tasks.attachments.store');
     Route::patch('attachments/{attachment}', [TaskAttachmentController::class, 'update'])->name('attachments.update');
     Route::delete('attachments/{attachment}', [TaskAttachmentController::class, 'destroy'])->name('attachments.destroy');
@@ -51,7 +56,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'role:Administrator'])->group(function () {
-    Route::resource('users', UserController::class)->except('show');
+    Route::resource('users', UserController::class)->except(['show', 'create', 'edit']);
 });
 
 require __DIR__.'/auth.php';

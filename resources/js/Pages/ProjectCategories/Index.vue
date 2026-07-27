@@ -4,6 +4,7 @@ import Pagination from '@/Components/Pagination.vue';
 import AppButton from '@/Components/AppButton.vue';
 import SearchInput from '@/Components/SearchInput.vue';
 import { useLiveSearch } from '@/composables/useLiveSearch';
+import { useConfirm } from '@/composables/useConfirm';
 import { Head, Link, router } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -12,11 +13,12 @@ const props = defineProps({
 });
 
 const search = useLiveSearch(route('project-categories.index'), props.filters.search);
+const { askConfirm } = useConfirm();
 
 const destroy = (category) => {
-    if (confirm(`Hapus kategori "${category.name}"?`)) {
+    askConfirm(`Hapus kategori "${category.name}"?`, () => {
         router.delete(route('project-categories.destroy', category.id));
-    }
+    });
 };
 </script>
 

@@ -26,12 +26,8 @@ class RoleController extends Controller
         return Inertia::render('Roles/Index', [
             'roles' => $roles,
             'filters' => $request->only('search'),
+            'availablePermissions' => Role::AVAILABLE_PERMISSIONS,
         ]);
-    }
-
-    public function create(): Response
-    {
-        return Inertia::render('Roles/Create');
     }
 
     public function store(StoreRoleRequest $request): RedirectResponse
@@ -39,13 +35,6 @@ class RoleController extends Controller
         Role::create($request->validated());
 
         return redirect()->route('roles.index')->with('success', 'Role berhasil dibuat.');
-    }
-
-    public function edit(Role $role): Response
-    {
-        return Inertia::render('Roles/Edit', [
-            'role' => $role,
-        ]);
     }
 
     public function update(UpdateRoleRequest $request, Role $role): RedirectResponse

@@ -32,14 +32,8 @@ class ProjectController extends Controller
 
         return Inertia::render('Projects/Index', [
             'projects' => $projects,
-            'filters' => $request->only('search'),
-        ]);
-    }
-
-    public function create(): Response
-    {
-        return Inertia::render('Projects/Create', [
             'categories' => ProjectCategory::all(['id', 'name']),
+            'filters' => $request->only('search'),
         ]);
     }
 
@@ -102,5 +96,32 @@ class ProjectController extends Controller
         $project->delete();
 
         return redirect()->route('projects.index')->with('success', 'Project berhasil dihapus.');
+    }
+
+    public function trashed(Request $request): Response
+    {
+        $projects = Project::onlyTrashed()
+            ->with(['category', 'creator'])
+            ->when($request->string('search')->toString(), function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->latest('deleted_at')
+            ->paginate(10)
+            ->withQueryString();
+
+        return Inertia::render('Projects/Trashed', [
+            'projects' => $projects,
+            'filters' => $request->only('search'),
+        ]);
+    }
+
+    public function trashedShow(string $project): Response
+    {
+        $project = Project::onlyTrashed()->with(['category', 'creator'])->findOrFail($project);
+
+        return Inertia::render('Projects/TrashedShow', [
+            'project' => $project,
+            'audits' => $this->projectActivity($project),
+        ]);
     }
 }

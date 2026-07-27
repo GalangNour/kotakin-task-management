@@ -1,9 +1,12 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import Avatar from '@/Components/Avatar.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
+import Toast from '@/Components/Toast.vue';
+import ConfirmDialog from '@/Components/ConfirmDialog.vue';
+import { useToast } from '@/composables/useToast';
 
 defineProps({
     eyebrow: {
@@ -21,6 +24,16 @@ const user = computed(() => page.props.auth.user);
 const isAdministrator = computed(() => user.value?.role?.name === 'Administrator');
 const flashSuccess = computed(() => page.props.flash?.success);
 const flashError = computed(() => page.props.flash?.error);
+
+const { show: showToast } = useToast();
+
+watch(flashSuccess, (message) => {
+    if (message) showToast(message, 'success');
+}, { immediate: true });
+
+watch(flashError, (message) => {
+    if (message) showToast(message, 'error');
+}, { immediate: true });
 
 const navItems = computed(() => {
     const items = [
@@ -97,24 +110,12 @@ const navItems = computed(() => {
                 </div>
             </header>
 
-            <div v-if="flashSuccess || flashError" class="px-9 pt-5">
-                <div
-                    v-if="flashSuccess"
-                    class="rounded-control bg-success-tint px-4 py-3 text-sm font-medium text-success"
-                >
-                    {{ flashSuccess }}
-                </div>
-                <div
-                    v-if="flashError"
-                    class="rounded-control bg-danger-tint px-4 py-3 text-sm font-medium text-danger"
-                >
-                    {{ flashError }}
-                </div>
-            </div>
-
             <main class="flex-1 px-9 py-8">
                 <slot />
             </main>
         </div>
+
+        <Toast />
+        <ConfirmDialog />
     </div>
 </template>

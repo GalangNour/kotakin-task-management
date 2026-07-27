@@ -7,6 +7,9 @@ import SelectInput from '@/Components/SelectInput.vue';
 import AppButton from '@/Components/AppButton.vue';
 import Badge from '@/Components/Badge.vue';
 import { Head, useForm } from '@inertiajs/vue3';
+import { useToast } from '@/composables/useToast';
+
+const { show: showToast } = useToast();
 
 const props = defineProps({
     project: Object,
@@ -74,6 +77,7 @@ const uploadFile = async (event) => {
         importForm.file_path = data.file_path;
         importForm.original_file_name = data.original_file_name;
         uploadStep.value = 'mapping';
+        showToast('File berhasil diunggah', 'success');
     } catch (e) {
         uploadError.value = 'Gagal mengupload file.';
     } finally {
@@ -82,7 +86,9 @@ const uploadFile = async (event) => {
 };
 
 const submitImport = () => {
-    importForm.post(route('projects.tasks.import.store', props.project.id));
+    importForm.post(route('projects.tasks.import.store', props.project.id), {
+        onSuccess: () => showToast('Memproses import di background...', 'info'),
+    });
 };
 
 const resetImport = () => {
@@ -113,6 +119,12 @@ const pollImport = async (importId) => {
     };
     if (data.status === 'completed' || data.status === 'failed') {
         stopImportPolling();
+        showToast(
+            data.status === 'failed'
+                ? 'Import gagal'
+                : `Import selesai: ${data.imported_rows ?? 0} baris berhasil`,
+            data.status === 'failed' ? 'error' : 'success',
+        );
     }
 };
 
@@ -157,7 +169,9 @@ const exportForm = useForm({
 });
 
 const submitExport = () => {
-    exportForm.post(route('projects.tasks.export.store', props.project.id));
+    exportForm.post(route('projects.tasks.export.store', props.project.id), {
+        onSuccess: () => showToast('Export dimulai, sedang memproses...', 'info'),
+    });
 };
 
 const historyRows = ref([]);
@@ -180,6 +194,10 @@ const pollExport = async (exportId) => {
     if (row) row.status = data.status;
     if (data.status === 'completed' || data.status === 'failed') {
         stopExportPolling();
+        showToast(
+            data.status === 'failed' ? 'Export gagal' : 'Export selesai, file siap diunduh',
+            data.status === 'failed' ? 'error' : 'success',
+        );
     }
 };
 

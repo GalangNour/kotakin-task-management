@@ -1,23 +1,42 @@
 <script setup>
+import { ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import Badge from '@/Components/Badge.vue';
 import AppButton from '@/Components/AppButton.vue';
 import SearchInput from '@/Components/SearchInput.vue';
+import RoleModal from '@/Pages/Roles/RoleModal.vue';
 import { useLiveSearch } from '@/composables/useLiveSearch';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { useConfirm } from '@/composables/useConfirm';
+import { Head, router } from '@inertiajs/vue3';
 
 const props = defineProps({
     roles: Object,
     filters: Object,
+    availablePermissions: Object,
 });
 
 const search = useLiveSearch(route('roles.index'), props.filters.search);
+const { askConfirm } = useConfirm();
 
 const destroy = (role) => {
-    if (confirm(`Hapus role "${role.name}"?`)) {
+    askConfirm(`Hapus role "${role.name}"?`, () => {
         router.delete(route('roles.destroy', role.id));
-    }
+    });
+};
+
+const roleModal = ref(null); // null | { mode, role }
+
+const openCreateRole = () => {
+    roleModal.value = { mode: 'create', role: null };
+};
+
+const openEditRole = (role) => {
+    roleModal.value = { mode: 'edit', role };
+};
+
+const closeRoleModal = () => {
+    roleModal.value = null;
 };
 </script>
 
@@ -27,7 +46,7 @@ const destroy = (role) => {
     <AuthenticatedLayout eyebrow="Kelola" title="Roles">
         <template #actions>
             <SearchInput v-model="search" placeholder="Cari role..." />
-            <AppButton variant="primary" :href="route('roles.create')">+ Tambah Role</AppButton>
+            <AppButton variant="primary" @click="openCreateRole">+ Tambah Role</AppButton>
         </template>
 
         <div class="grid gap-[18px]" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr))">
@@ -47,14 +66,14 @@ const destroy = (role) => {
                         :key="perm"
                         class="rounded-chip bg-neutral-tint px-2.5 py-1 text-xs text-ink/80"
                     >
-                        {{ perm }}
+                        {{ availablePermissions[perm] ?? perm }}
                     </span>
                     <span v-if="(role.permissions ?? []).length === 0" class="text-xs text-secondary">
                         Tidak ada permission.
                     </span>
                 </div>
                 <div class="flex items-center gap-3.5 text-[13px] font-semibold">
-                    <Link :href="route('roles.edit', role.id)" class="text-ink hover:text-accent">Edit Role</Link>
+                    <button @click="openEditRole(role)" class="text-ink hover:text-accent">Edit Role</button>
                     <button @click="destroy(role)" class="text-danger hover:underline">Hapus</button>
                 </div>
             </div>
@@ -65,5 +84,13 @@ const destroy = (role) => {
         </div>
 
         <Pagination :links="roles.links" />
+
+        <RoleModal
+            :show="!!roleModal"
+            :mode="roleModal?.mode ?? 'create'"
+            :role="roleModal?.role ?? null"
+            :available-permissions="availablePermissions"
+            @close="closeRoleModal"
+        />
     </AuthenticatedLayout>
 </template>

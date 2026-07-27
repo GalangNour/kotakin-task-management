@@ -1,15 +1,21 @@
 <script setup>
+import { ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import Badge from '@/Components/Badge.vue';
+import ProjectModal from '@/Pages/Projects/ProjectModal.vue';
 
 const props = defineProps({
     project: {
         type: Object,
         required: true,
     },
+    categories: {
+        type: Array,
+        default: () => [],
+    },
     active: {
         type: String,
-        required: true, // 'tasks' | 'detail' | 'history'
+        required: true, // 'tasks' | 'history'
     },
 });
 
@@ -17,6 +23,8 @@ const tabClass = (key) =>
     props.active === key
         ? 'border-b-2 border-accent text-accent-dark'
         : 'border-b-2 border-transparent text-secondary hover:text-ink';
+
+const showEditModal = ref(false);
 </script>
 
 <template>
@@ -30,6 +38,9 @@ const tabClass = (key) =>
             <div class="flex items-center gap-3">
                 <div class="text-[22px] font-extrabold tracking-tight">{{ project.name }}</div>
                 <Badge :label="project.is_active ? 'Aktif' : 'Nonaktif'" :tone="project.is_active ? 'success' : 'neutral'" />
+                <button class="text-[13px] font-semibold text-accent hover:text-accent-dark" @click="showEditModal = true">
+                    Edit
+                </button>
             </div>
             <slot name="action" />
         </div>
@@ -45,17 +56,18 @@ const tabClass = (key) =>
             <Link
                 :href="route('projects.edit', project.id)"
                 class="px-3.5 py-2.5 text-[13px] font-bold transition"
-                :class="tabClass('detail')"
-            >
-                Detail
-            </Link>
-            <Link
-                :href="`${route('projects.edit', project.id)}?tab=history`"
-                class="px-3.5 py-2.5 text-[13px] font-bold transition"
                 :class="tabClass('history')"
             >
                 History &amp; Audit Trail
             </Link>
         </div>
+
+        <ProjectModal
+            :show="showEditModal"
+            mode="edit"
+            :project="project"
+            :categories="categories"
+            @close="showEditModal = false"
+        />
     </div>
 </template>

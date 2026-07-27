@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import Badge from '@/Components/Badge.vue';
@@ -6,20 +7,38 @@ import Avatar from '@/Components/Avatar.vue';
 import ProgressBar from '@/Components/ProgressBar.vue';
 import AppButton from '@/Components/AppButton.vue';
 import SearchInput from '@/Components/SearchInput.vue';
+import ProjectModal from '@/Pages/Projects/ProjectModal.vue';
 import { useLiveSearch } from '@/composables/useLiveSearch';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { useConfirm } from '@/composables/useConfirm';
+import { Head, router } from '@inertiajs/vue3';
 
 const props = defineProps({
     projects: Object,
+    categories: Array,
     filters: Object,
 });
 
 const search = useLiveSearch(route('projects.index'), props.filters.search);
+const { askConfirm } = useConfirm();
 
 const destroy = (project) => {
-    if (confirm(`Hapus project "${project.name}"? Semua task di dalamnya ikut terhapus.`)) {
+    askConfirm(`Hapus project "${project.name}"? Semua task di dalamnya ikut terhapus.`, () => {
         router.delete(route('projects.destroy', project.id));
-    }
+    });
+};
+
+const projectModal = ref(null); // null | { mode, project }
+
+const openCreateProject = () => {
+    projectModal.value = { mode: 'create', project: null };
+};
+
+const openEditProject = (project) => {
+    projectModal.value = { mode: 'edit', project };
+};
+
+const closeProjectModal = () => {
+    projectModal.value = null;
 };
 
 const formatDate = (value) => {
@@ -37,8 +56,9 @@ const progressPct = (project) =>
     <AuthenticatedLayout eyebrow="Kelola" title="Projects">
         <template #actions>
             <SearchInput v-model="search" placeholder="Cari project..." />
+            <AppButton variant="secondary" :href="route('projects.trashed')">Project Terhapus</AppButton>
             <AppButton variant="secondary" :href="route('project-categories.index')">Kelola Kategori</AppButton>
-            <AppButton variant="primary" :href="route('projects.create')">+ Tambah Project</AppButton>
+            <AppButton variant="primary" @click="openCreateProject">+ Tambah Project</AppButton>
         </template>
 
         <div class="grid gap-[18px]" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr))">
@@ -77,7 +97,7 @@ const progressPct = (project) =>
                 </div>
 
                 <div class="flex items-center justify-end gap-3 border-t border-divider pt-2.5 text-xs font-semibold" @click.stop>
-                    <Link :href="route('projects.edit', project.id)" class="text-ink hover:text-accent">Edit</Link>
+                    <button @click="openEditProject(project)" class="text-ink hover:text-accent">Edit</button>
                     <button @click="destroy(project)" class="text-danger hover:underline">Hapus</button>
                 </div>
             </div>
@@ -88,5 +108,13 @@ const progressPct = (project) =>
         </div>
 
         <Pagination :links="projects.links" />
+
+        <ProjectModal
+            :show="!!projectModal"
+            :mode="projectModal?.mode ?? 'create'"
+            :project="projectModal?.project ?? null"
+            :categories="categories"
+            @close="closeProjectModal"
+        />
     </AuthenticatedLayout>
 </template>

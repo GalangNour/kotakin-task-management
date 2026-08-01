@@ -9,7 +9,7 @@ const { confirmState, cancel, confirmAction } = useConfirm();
 <template>
     <Modal :show="!!confirmState" max-width="sm" @close="cancel">
         <div class="p-6">
-            <div class="mb-2 text-base font-extrabold">Konfirmasi</div>
+            <div class="mb-2 font-display text-base font-semibold">Konfirmasi</div>
             <p class="mb-6 text-sm text-secondary">{{ confirmState?.message }}</p>
             <div class="flex justify-end gap-2.5">
                 <AppButton variant="secondary" @click="cancel">Batal</AppButton>

@@ -11,6 +11,7 @@ import ProjectModal from '@/Pages/Projects/ProjectModal.vue';
 import { useLiveSearch } from '@/composables/useLiveSearch';
 import { useConfirm } from '@/composables/useConfirm';
 import { Head, router } from '@inertiajs/vue3';
+import { Plus, Pencil, Trash2 } from '@lucide/vue';
 
 const props = defineProps({
     projects: Object,
@@ -58,14 +59,16 @@ const progressPct = (project) =>
             <SearchInput v-model="search" placeholder="Cari project..." />
             <AppButton variant="secondary" :href="route('projects.trashed')">Project Terhapus</AppButton>
             <AppButton variant="secondary" :href="route('project-categories.index')">Kelola Kategori</AppButton>
-            <AppButton variant="primary" @click="openCreateProject">+ Tambah Project</AppButton>
+            <AppButton variant="primary" @click="openCreateProject">
+                <Plus :size="14" :stroke-width="2.5" /> Tambah Project
+            </AppButton>
         </template>
 
         <div class="grid gap-[18px]" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr))">
             <div
                 v-for="project in projects.data"
                 :key="project.id"
-                class="flex cursor-pointer flex-col gap-3 rounded-card border border-border bg-white p-5 transition hover:border-accent/40"
+                class="flex cursor-pointer flex-col gap-3 rounded-card border border-border bg-white p-5 shadow-card transition-all duration-150 ease-out hover:border-accent/40 hover:shadow-popover"
                 @click="router.visit(route('projects.tasks.index', project.id))"
             >
                 <div class="flex items-center justify-between">
@@ -74,7 +77,7 @@ const progressPct = (project) =>
                 </div>
 
                 <div>
-                    <div class="mb-1 text-base font-extrabold">{{ project.name }}</div>
+                    <div class="mb-1 font-display text-base font-semibold">{{ project.name }}</div>
                     <div class="line-clamp-2 text-[13px] leading-relaxed text-secondary">
                         {{ project.description || 'Tidak ada deskripsi.' }}
                     </div>
@@ -97,8 +100,12 @@ const progressPct = (project) =>
                 </div>
 
                 <div class="flex items-center justify-end gap-3 border-t border-divider pt-2.5 text-xs font-semibold" @click.stop>
-                    <button @click="openEditProject(project)" class="text-ink hover:text-accent">Edit</button>
-                    <button @click="destroy(project)" class="text-danger hover:underline">Hapus</button>
+                    <button @click="openEditProject(project)" class="flex items-center gap-1 text-ink transition-colors duration-150 ease-out hover:text-accent">
+                        <Pencil :size="12" :stroke-width="2.25" /> Edit
+                    </button>
+                    <button @click="destroy(project)" class="flex items-center gap-1 text-danger hover:underline">
+                        <Trash2 :size="12" :stroke-width="2.25" /> Hapus
+                    </button>
                 </div>
             </div>
 

@@ -35,7 +35,7 @@ const variantClasses = {
     <component
         :is="href ? Link : 'button'"
         v-bind="href ? { href, method, as: method ? 'button' : 'a' } : { type, disabled }"
-        class="inline-flex items-center justify-center whitespace-nowrap rounded-control px-4 py-2.5 text-[13px] font-bold transition disabled:cursor-not-allowed disabled:opacity-50"
+        class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-control px-4 py-2.5 text-[13px] font-bold transition duration-150 ease-out active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
         :class="variantClasses[variant] ?? variantClasses.primary"
     >
         <slot />

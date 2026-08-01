@@ -10,6 +10,7 @@ import UserModal from '@/Pages/Users/UserModal.vue';
 import { useLiveSearch } from '@/composables/useLiveSearch';
 import { useConfirm } from '@/composables/useConfirm';
 import { Head, router, usePage } from '@inertiajs/vue3';
+import { Plus, Pencil, Trash2 } from '@lucide/vue';
 
 const props = defineProps({
     users: Object,
@@ -50,7 +51,9 @@ const closeUserModal = () => {
     <AuthenticatedLayout eyebrow="Kelola" title="User Account">
         <template #actions>
             <SearchInput v-model="search" placeholder="Cari nama/email..." />
-            <AppButton variant="primary" @click="openCreateUser">+ Tambah User</AppButton>
+            <AppButton variant="primary" @click="openCreateUser">
+                <Plus :size="14" :stroke-width="2.5" /> Tambah User
+            </AppButton>
         </template>
 
         <div class="overflow-hidden rounded-card border border-border bg-white">
@@ -67,9 +70,11 @@ const closeUserModal = () => {
                 <Badge :label="user.role?.name ?? '-'" tone="neutral" />
                 <Badge :label="user.is_active ? 'Aktif' : 'Nonaktif'" :tone="user.is_active ? 'success' : 'neutral'" />
                 <div class="flex w-24 justify-end gap-3.5 text-[13px] font-semibold">
-                    <button @click="openEditUser(user)" class="text-ink hover:text-accent">Edit</button>
-                    <button v-if="user.id !== currentUserId" @click="destroy(user)" class="text-danger hover:underline">
-                        Hapus
+                    <button @click="openEditUser(user)" class="flex items-center gap-1 text-ink transition-colors duration-150 ease-out hover:text-accent">
+                        <Pencil :size="12" :stroke-width="2.25" />
+                    </button>
+                    <button v-if="user.id !== currentUserId" @click="destroy(user)" class="flex items-center gap-1 text-danger hover:underline">
+                        <Trash2 :size="12" :stroke-width="2.25" />
                     </button>
                 </div>
             </div>

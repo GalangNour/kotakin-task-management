@@ -17,7 +17,7 @@ defineProps({
         :style="{ height: `${height}px` }"
     >
         <div
-            class="h-full rounded-full bg-accent transition-all"
+            class="h-full rounded-full bg-accent transition-all duration-300 ease-out"
             :style="{ width: `${Math.min(100, Math.max(0, value))}%` }"
         />
     </div>

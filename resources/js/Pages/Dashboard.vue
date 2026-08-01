@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ProgressBar from '@/Components/ProgressBar.vue';
 import { Head } from '@inertiajs/vue3';
+import { FolderKanban, ListChecks, CircleCheckBig, AlertTriangle } from '@lucide/vue';
 
 defineProps({
     stats: Array,
@@ -9,6 +10,8 @@ defineProps({
     attentionTasks: Array,
     recentActivity: Array,
 });
+
+const statIcons = [FolderKanban, ListChecks, CircleCheckBig, AlertTriangle];
 
 const subToneClass = {
     success: 'text-success',
@@ -30,12 +33,18 @@ const eventDotClass = {
     <AuthenticatedLayout eyebrow="Ringkasan" title="Dashboard">
         <div class="mb-7 grid grid-cols-4 gap-4">
             <div
-                v-for="card in stats"
+                v-for="(card, index) in stats"
                 :key="card.label"
-                class="rounded-card border border-border bg-white p-5"
+                class="animate-stagger-in rounded-card border border-border bg-white p-5"
+                :style="{ animationDelay: `${index * 40}ms` }"
             >
-                <div class="mb-2.5 text-[13px] font-semibold text-secondary">{{ card.label }}</div>
-                <div class="text-[28px] font-extrabold tracking-tight">{{ card.value }}</div>
+                <div class="mb-3 flex items-center justify-between">
+                    <span class="text-[13px] font-semibold text-secondary">{{ card.label }}</span>
+                    <span class="flex h-7 w-7 items-center justify-center rounded-control bg-accent-tint text-accent-dark">
+                        <component :is="statIcons[index]" :size="15" :stroke-width="2.25" />
+                    </span>
+                </div>
+                <div class="font-display text-[28px] font-semibold tracking-tight">{{ card.value }}</div>
                 <div class="mt-1.5 text-xs font-semibold" :class="subToneClass[card.subTone] ?? 'text-secondary'">
                     {{ card.sub }}
                 </div>
@@ -44,7 +53,7 @@ const eventDotClass = {
 
         <div class="grid grid-cols-[1.3fr_1fr] gap-5">
             <div class="rounded-card border border-border bg-white p-[22px]">
-                <div class="mb-4 text-[15px] font-extrabold">Progress per Project</div>
+                <div class="mb-4 font-display text-[15px] font-semibold">Progress per Project</div>
                 <div class="flex flex-col gap-4">
                     <div v-for="row in progressPerProject" :key="row.name">
                         <div class="mb-1.5 flex justify-between text-[13px]">
@@ -58,7 +67,7 @@ const eventDotClass = {
                     </p>
                 </div>
 
-                <div class="mb-3.5 mt-6 text-[15px] font-extrabold">Task Overdue &amp; Due Soon</div>
+                <div class="mb-3.5 mt-6 font-display text-[15px] font-semibold">Task Overdue &amp; Due Soon</div>
                 <div class="flex flex-col border-t border-divider">
                     <div
                         v-for="(task, index) in attentionTasks"
@@ -83,7 +92,7 @@ const eventDotClass = {
             </div>
 
             <div class="rounded-card border border-border bg-white p-[22px]">
-                <div class="mb-4 text-[15px] font-extrabold">Aktivitas Terbaru</div>
+                <div class="mb-4 font-display text-[15px] font-semibold">Aktivitas Terbaru</div>
                 <div class="flex flex-col gap-4">
                     <div v-for="(item, index) in recentActivity" :key="index" class="flex gap-2.5">
                         <div

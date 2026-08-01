@@ -22,7 +22,7 @@ const props = defineProps({
 const tabClass = (key) =>
     props.active === key
         ? 'border-b-2 border-accent text-accent-dark'
-        : 'border-b-2 border-transparent text-secondary hover:text-ink';
+        : 'border-b-2 border-transparent text-secondary transition-colors duration-150 ease-out hover:text-ink';
 
 const showEditModal = ref(false);
 </script>
@@ -36,9 +36,9 @@ const showEditModal = ref(false);
 
         <div class="mb-5 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="text-[22px] font-extrabold tracking-tight">{{ project.name }}</div>
+                <div class="font-display text-[22px] font-semibold tracking-tight">{{ project.name }}</div>
                 <Badge :label="project.is_active ? 'Aktif' : 'Nonaktif'" :tone="project.is_active ? 'success' : 'neutral'" />
-                <button class="text-[13px] font-semibold text-accent hover:text-accent-dark" @click="showEditModal = true">
+                <button class="text-[13px] font-semibold text-accent transition-colors duration-150 ease-out hover:text-accent-dark" @click="showEditModal = true">
                     Edit
                 </button>
             </div>
@@ -48,14 +48,14 @@ const showEditModal = ref(false);
         <div class="mb-6 flex gap-1 border-b border-border">
             <Link
                 :href="route('projects.tasks.index', project.id)"
-                class="px-3.5 py-2.5 text-[13px] font-bold transition"
+                class="px-3.5 py-2.5 text-[13px] font-bold"
                 :class="tabClass('tasks')"
             >
                 Task
             </Link>
             <Link
                 :href="route('projects.edit', project.id)"
-                class="px-3.5 py-2.5 text-[13px] font-bold transition"
+                class="px-3.5 py-2.5 text-[13px] font-bold"
                 :class="tabClass('history')"
             >
                 History &amp; Audit Trail

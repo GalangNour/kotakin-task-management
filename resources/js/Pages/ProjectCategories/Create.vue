@@ -22,7 +22,7 @@ const submit = () => {
         <div class="max-w-[640px] rounded-card border border-border bg-white p-6">
             <form @submit.prevent="submit" class="space-y-4">
                 <div>
-                    <InputLabel for="name" value="Nama Kategori" class="!text-xs !font-semibold !text-secondary" />
+                    <InputLabel for="name" value="Nama Kategori" />
                     <TextInput id="name" v-model="form.name" class="mt-1 block w-full" required autofocus />
                     <InputError class="mt-1" :message="form.errors.name" />
                 </div>

@@ -7,6 +7,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import AppButton from '@/Components/AppButton.vue';
 import { useToast } from '@/composables/useToast';
+import { X, Check } from '@lucide/vue';
 
 const props = defineProps({
     show: { type: Boolean, default: false },
@@ -64,41 +65,43 @@ const submit = () => {
     <Modal :show="show" max-width="lg" @close="close">
         <div class="p-6">
             <div class="mb-4 flex items-center justify-between">
-                <div class="text-lg font-extrabold">{{ mode === 'edit' ? 'Edit Role' : 'Tambah Role' }}</div>
-                <button class="text-xl leading-none text-secondary hover:text-ink" @click="close">&times;</button>
+                <div class="font-display text-lg font-semibold">{{ mode === 'edit' ? 'Edit Role' : 'Tambah Role' }}</div>
+                <button class="rounded-control p-1 text-secondary transition-colors duration-150 ease-out hover:bg-neutral-tint hover:text-ink" @click="close">
+                    <X :size="18" :stroke-width="2.25" />
+                </button>
             </div>
 
             <form class="max-h-[70vh] space-y-4 overflow-y-auto pr-1" @submit.prevent="submit">
                 <div>
-                    <InputLabel for="name" value="Nama Role" class="!text-xs !font-semibold !text-secondary" />
+                    <InputLabel for="name" value="Nama Role" />
                     <TextInput id="name" v-model="form.name" class="mt-1 block w-full" required autofocus />
                     <InputError class="mt-1" :message="form.errors.name" />
                 </div>
 
                 <div>
-                    <InputLabel value="Akses / Permissions" class="!text-xs !font-semibold !text-secondary" />
+                    <InputLabel value="Akses / Permissions" />
                     <div class="mt-2 overflow-hidden rounded-card-sm border border-border">
                         <button
                             v-for="(label, key) in availablePermissions"
                             :key="key"
                             type="button"
-                            class="flex min-h-[44px] w-full items-center justify-between border-b border-divider px-3.5 text-left text-[13px] font-semibold last:border-b-0"
+                            class="flex min-h-[44px] w-full items-center justify-between border-b border-divider px-3.5 text-left text-[13px] font-semibold transition-colors duration-150 ease-out last:border-b-0"
                             :class="form.permissions.includes(key) ? 'bg-accent-tint text-accent-dark' : 'text-secondary hover:bg-neutral-tint'"
                             @click="togglePermission(key)"
                         >
                             <span>{{ label }}</span>
-                            <span v-if="form.permissions.includes(key)" class="font-extrabold">&#10003;</span>
+                            <Check v-if="form.permissions.includes(key)" :size="15" :stroke-width="2.75" />
                         </button>
                     </div>
                     <InputError class="mt-1" :message="form.errors.permissions" />
                 </div>
 
                 <div>
-                    <InputLabel value="Status" class="!text-xs !font-semibold !text-secondary" />
+                    <InputLabel value="Status" />
                     <div class="mt-1">
                         <button
                             type="button"
-                            class="rounded-control px-3.5 py-1.5 text-[13px] font-bold transition"
+                            class="rounded-control px-3.5 py-1.5 text-[13px] font-bold transition-colors duration-150 ease-out"
                             :class="form.is_active ? 'bg-success-tint text-success' : 'bg-neutral-tint text-secondary'"
                             @click="form.is_active = !form.is_active"
                         >

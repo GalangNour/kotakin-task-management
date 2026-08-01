@@ -14,18 +14,18 @@ defineProps({
         <template v-for="(link, index) in links" :key="index">
             <div
                 v-if="link.url === null"
-                class="rounded-md px-3 py-1 text-sm text-gray-400 dark:text-gray-600"
+                class="rounded-control px-3 py-1 text-sm text-secondary/50"
                 v-html="link.label"
             />
             <Link
                 v-else
                 :href="link.url"
                 preserve-scroll
-                class="rounded-md px-3 py-1 text-sm"
+                class="rounded-control px-3 py-1 text-sm font-semibold transition-colors duration-150 ease-out"
                 :class="
                     link.active
-                        ? 'bg-gray-800 text-white dark:bg-gray-200 dark:text-gray-800'
-                        : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+                        ? 'bg-accent text-white'
+                        : 'text-secondary hover:bg-neutral-tint'
                 "
                 v-html="link.label"
             />

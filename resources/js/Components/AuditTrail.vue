@@ -1,5 +1,6 @@
 <script setup>
 import Badge from '@/Components/Badge.vue';
+import { ArrowRight } from '@lucide/vue';
 
 defineProps({
     audits: {
@@ -61,10 +62,11 @@ const formatValue = (value) => {
                 </div>
 
                 <div v-if="audit.event === 'updated' && changedKeys(audit).length">
-                    <div v-for="key in changedKeys(audit)" :key="key" class="mb-0.5 text-xs">
+                    <div v-for="key in changedKeys(audit)" :key="key" class="mb-0.5 flex items-center gap-1 text-xs">
                         <span class="font-semibold text-secondary">{{ key }}:</span>
-                        <span class="mx-1 text-danger line-through">{{ formatValue(audit.old_values?.[key]) }}</span>
-                        <span class="text-success">&rarr; {{ formatValue(audit.new_values?.[key]) }}</span>
+                        <span class="text-danger line-through">{{ formatValue(audit.old_values?.[key]) }}</span>
+                        <ArrowRight :size="11" :stroke-width="2.25" class="text-neutral" />
+                        <span class="text-success">{{ formatValue(audit.new_values?.[key]) }}</span>
                     </div>
                 </div>
             </div>

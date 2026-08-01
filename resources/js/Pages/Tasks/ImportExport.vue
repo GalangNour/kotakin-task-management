@@ -8,6 +8,7 @@ import AppButton from '@/Components/AppButton.vue';
 import Badge from '@/Components/Badge.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { useToast } from '@/composables/useToast';
+import { ArrowRight, Download } from '@lucide/vue';
 
 const { show: showToast } = useToast();
 
@@ -228,14 +229,14 @@ onBeforeUnmount(() => {
 
         <div class="mb-6 flex gap-1 border-b border-border">
             <button
-                class="px-3.5 py-2.5 text-[13px] font-bold transition"
+                class="px-3.5 py-2.5 text-[13px] font-bold transition-colors duration-150 ease-out"
                 :class="tab === 'import' ? 'border-b-2 border-accent text-accent-dark' : 'border-b-2 border-transparent text-secondary hover:text-ink'"
                 @click="tab = 'import'"
             >
                 Import
             </button>
             <button
-                class="px-3.5 py-2.5 text-[13px] font-bold transition"
+                class="px-3.5 py-2.5 text-[13px] font-bold transition-colors duration-150 ease-out"
                 :class="tab === 'export' ? 'border-b-2 border-accent text-accent-dark' : 'border-b-2 border-transparent text-secondary hover:text-ink'"
                 @click="tab = 'export'"
             >
@@ -293,7 +294,7 @@ onBeforeUnmount(() => {
                     <div class="flex flex-col gap-2.5">
                         <div v-for="(label, key) in systemFields" :key="key" class="flex items-center gap-3 rounded-card-sm bg-app px-3.5 py-2.5">
                             <span class="flex-1 text-[13px] font-bold">{{ label }}</span>
-                            <span class="text-neutral">&rarr;</span>
+                            <ArrowRight :size="14" :stroke-width="2.25" class="text-neutral" />
                             <SelectInput :id="key" v-model="importForm.mapping[key]" class="flex-1 !py-1.5 !text-[13px]">
                                 <option value="">- Tidak dipetakan -</option>
                                 <option v-for="header in fileHeaders" :key="header" :value="header">{{ header }}</option>
@@ -375,9 +376,9 @@ onBeforeUnmount(() => {
                         <a
                             v-if="job.status === 'completed'"
                             :href="downloadUrl(job)"
-                            class="text-[13px] font-semibold text-accent hover:text-accent-dark"
+                            class="flex items-center gap-1 text-[13px] font-semibold text-accent transition-colors duration-150 ease-out hover:text-accent-dark"
                         >
-                            Download
+                            <Download :size="13" :stroke-width="2.25" /> Download
                         </a>
                         <Badge :label="exportStatusLabel[job.status]" :tone="exportStatusTone[job.status]" />
                     </div>

@@ -6,6 +6,7 @@ import SearchInput from '@/Components/SearchInput.vue';
 import { useLiveSearch } from '@/composables/useLiveSearch';
 import { useConfirm } from '@/composables/useConfirm';
 import { Head, Link, router } from '@inertiajs/vue3';
+import { Plus, Pencil, Trash2 } from '@lucide/vue';
 
 const props = defineProps({
     categories: Object,
@@ -28,7 +29,9 @@ const destroy = (category) => {
     <AuthenticatedLayout eyebrow="Kelola" title="Kategori Project">
         <template #actions>
             <SearchInput v-model="search" placeholder="Cari kategori..." />
-            <AppButton variant="primary" :href="route('project-categories.create')">+ Tambah Kategori</AppButton>
+            <AppButton variant="primary" :href="route('project-categories.create')">
+                <Plus :size="14" :stroke-width="2.5" /> Tambah Kategori
+            </AppButton>
         </template>
 
         <div class="overflow-hidden rounded-card border border-border bg-white">
@@ -39,8 +42,12 @@ const destroy = (category) => {
             >
                 <span class="text-sm font-bold">{{ category.name }}</span>
                 <div class="flex gap-3.5 text-[13px] font-semibold">
-                    <Link :href="route('project-categories.edit', category.id)" class="text-ink hover:text-accent">Edit</Link>
-                    <button @click="destroy(category)" class="text-danger hover:underline">Hapus</button>
+                    <Link :href="route('project-categories.edit', category.id)" class="flex items-center gap-1 text-ink transition-colors duration-150 ease-out hover:text-accent">
+                        <Pencil :size="12" :stroke-width="2.25" /> Edit
+                    </Link>
+                    <button @click="destroy(category)" class="flex items-center gap-1 text-danger hover:underline">
+                        <Trash2 :size="12" :stroke-width="2.25" /> Hapus
+                    </button>
                 </div>
             </div>
 

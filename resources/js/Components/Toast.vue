@@ -12,16 +12,16 @@ const toneClasses = {
 
 <template>
     <Transition
-        enter-active-class="transition duration-150 ease-out"
-        enter-from-class="opacity-0 translate-y-2"
-        enter-to-class="opacity-100 translate-y-0"
-        leave-active-class="transition duration-150 ease-in"
-        leave-from-class="opacity-100"
-        leave-to-class="opacity-0"
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="opacity-0 translate-y-2 scale-95"
+        enter-to-class="opacity-100 translate-y-0 scale-100"
+        leave-active-class="transition duration-150 ease-out"
+        leave-from-class="opacity-100 scale-100"
+        leave-to-class="opacity-0 scale-95"
     >
         <div
             v-if="toast"
-            class="fixed bottom-6 right-6 z-[100] rounded-[11px] px-5 py-3.5 text-[13px] font-bold text-white shadow-[0_8px_24px_oklch(0.2_0.02_260_/_25%)]"
+            class="fixed bottom-6 right-6 z-[100] rounded-card-sm px-5 py-3.5 text-[13px] font-bold text-white shadow-toast"
             :class="toneClasses[toast.tone] ?? toneClasses.success"
         >
             {{ toast.message }}

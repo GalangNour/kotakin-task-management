@@ -9,6 +9,7 @@ import Textarea from '@/Components/Textarea.vue';
 import SelectInput from '@/Components/SelectInput.vue';
 import AppButton from '@/Components/AppButton.vue';
 import { useToast } from '@/composables/useToast';
+import { X } from '@lucide/vue';
 
 const props = defineProps({
     show: { type: Boolean, default: false },
@@ -65,19 +66,21 @@ const submit = () => {
     <Modal :show="show" max-width="lg" @close="close">
         <div class="p-6">
             <div class="mb-4 flex items-center justify-between">
-                <div class="text-lg font-extrabold">{{ mode === 'edit' ? 'Edit Project' : 'Tambah Project' }}</div>
-                <button class="text-xl leading-none text-secondary hover:text-ink" @click="close">&times;</button>
+                <div class="font-display text-lg font-semibold">{{ mode === 'edit' ? 'Edit Project' : 'Tambah Project' }}</div>
+                <button class="rounded-control p-1 text-secondary transition-colors duration-150 ease-out hover:bg-neutral-tint hover:text-ink" @click="close">
+                    <X :size="18" :stroke-width="2.25" />
+                </button>
             </div>
 
             <form class="max-h-[70vh] space-y-4 overflow-y-auto pr-1" @submit.prevent="submit">
                 <div>
-                    <InputLabel for="name" value="Nama Project" class="!text-xs !font-semibold !text-secondary" />
+                    <InputLabel for="name" value="Nama Project" />
                     <TextInput id="name" v-model="form.name" class="mt-1 block w-full" required autofocus />
                     <InputError class="mt-1" :message="form.errors.name" />
                 </div>
 
                 <div>
-                    <InputLabel for="category_id" value="Kategori" class="!text-xs !font-semibold !text-secondary" />
+                    <InputLabel for="category_id" value="Kategori" />
                     <SelectInput id="category_id" v-model="form.category_id" class="mt-1 block w-full">
                         <option value="">- Tanpa Kategori -</option>
                         <option v-for="category in categories" :key="category.id" :value="category.id">
@@ -89,29 +92,29 @@ const submit = () => {
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <InputLabel for="start_date" value="Mulai" class="!text-xs !font-semibold !text-secondary" />
+                        <InputLabel for="start_date" value="Mulai" />
                         <TextInput id="start_date" type="date" v-model="form.start_date" class="mt-1 block w-full" />
                         <InputError class="mt-1" :message="form.errors.start_date" />
                     </div>
                     <div>
-                        <InputLabel for="end_date" value="Selesai" class="!text-xs !font-semibold !text-secondary" />
+                        <InputLabel for="end_date" value="Selesai" />
                         <TextInput id="end_date" type="date" v-model="form.end_date" class="mt-1 block w-full" />
                         <InputError class="mt-1" :message="form.errors.end_date" />
                     </div>
                 </div>
 
                 <div>
-                    <InputLabel for="description" value="Deskripsi" class="!text-xs !font-semibold !text-secondary" />
+                    <InputLabel for="description" value="Deskripsi" />
                     <Textarea id="description" v-model="form.description" class="mt-1 block w-full" rows="3" />
                     <InputError class="mt-1" :message="form.errors.description" />
                 </div>
 
                 <div>
-                    <InputLabel value="Status" class="!text-xs !font-semibold !text-secondary" />
+                    <InputLabel value="Status" />
                     <div class="mt-1">
                         <button
                             type="button"
-                            class="rounded-control px-3.5 py-1.5 text-[13px] font-bold transition"
+                            class="rounded-control px-3.5 py-1.5 text-[13px] font-bold transition-colors duration-150 ease-out"
                             :class="form.is_active ? 'bg-success-tint text-success' : 'bg-neutral-tint text-secondary'"
                             @click="form.is_active = !form.is_active"
                         >

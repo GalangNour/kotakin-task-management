@@ -8,6 +8,7 @@ import TextInput from '@/Components/TextInput.vue';
 import SelectInput from '@/Components/SelectInput.vue';
 import AppButton from '@/Components/AppButton.vue';
 import { useToast } from '@/composables/useToast';
+import { X } from '@lucide/vue';
 
 const props = defineProps({
     show: { type: Boolean, default: false },
@@ -62,25 +63,27 @@ const submit = () => {
     <Modal :show="show" max-width="lg" @close="close">
         <div class="p-6">
             <div class="mb-4 flex items-center justify-between">
-                <div class="text-lg font-extrabold">{{ mode === 'edit' ? 'Edit User' : 'Tambah User' }}</div>
-                <button class="text-xl leading-none text-secondary hover:text-ink" @click="close">&times;</button>
+                <div class="font-display text-lg font-semibold">{{ mode === 'edit' ? 'Edit User' : 'Tambah User' }}</div>
+                <button class="rounded-control p-1 text-secondary transition-colors duration-150 ease-out hover:bg-neutral-tint hover:text-ink" @click="close">
+                    <X :size="18" :stroke-width="2.25" />
+                </button>
             </div>
 
             <form class="max-h-[70vh] space-y-4 overflow-y-auto pr-1" @submit.prevent="submit">
                 <div>
-                    <InputLabel for="name" value="Nama" class="!text-xs !font-semibold !text-secondary" />
+                    <InputLabel for="name" value="Nama" />
                     <TextInput id="name" v-model="form.name" class="mt-1 block w-full" required autofocus />
                     <InputError class="mt-1" :message="form.errors.name" />
                 </div>
 
                 <div>
-                    <InputLabel for="email" value="Email" class="!text-xs !font-semibold !text-secondary" />
+                    <InputLabel for="email" value="Email" />
                     <TextInput id="email" type="email" v-model="form.email" class="mt-1 block w-full" required />
                     <InputError class="mt-1" :message="form.errors.email" />
                 </div>
 
                 <div>
-                    <InputLabel for="role_id" value="Role" class="!text-xs !font-semibold !text-secondary" />
+                    <InputLabel for="role_id" value="Role" />
                     <SelectInput id="role_id" v-model="form.role_id" class="mt-1 block w-full">
                         <option value="">- Pilih Role -</option>
                         <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
@@ -92,14 +95,14 @@ const submit = () => {
                     <InputLabel
                         for="password"
                         :value="mode === 'edit' ? 'Password baru (kosongkan jika tidak diubah)' : 'Password'"
-                        class="!text-xs !font-semibold !text-secondary"
+                       
                     />
                     <TextInput id="password" type="password" v-model="form.password" class="mt-1 block w-full" :required="mode === 'create'" />
                     <InputError class="mt-1" :message="form.errors.password" />
                 </div>
 
                 <div>
-                    <InputLabel for="password_confirmation" value="Konfirmasi Password" class="!text-xs !font-semibold !text-secondary" />
+                    <InputLabel for="password_confirmation" value="Konfirmasi Password" />
                     <TextInput
                         id="password_confirmation"
                         type="password"
@@ -110,11 +113,11 @@ const submit = () => {
                 </div>
 
                 <div>
-                    <InputLabel value="Status" class="!text-xs !font-semibold !text-secondary" />
+                    <InputLabel value="Status" />
                     <div class="mt-1">
                         <button
                             type="button"
-                            class="rounded-control px-3.5 py-1.5 text-[13px] font-bold transition"
+                            class="rounded-control px-3.5 py-1.5 text-[13px] font-bold transition-colors duration-150 ease-out"
                             :class="form.is_active ? 'bg-success-tint text-success' : 'bg-neutral-tint text-secondary'"
                             @click="form.is_active = !form.is_active"
                         >

@@ -10,6 +10,7 @@ import TaskModal from '@/Pages/Tasks/TaskModal.vue';
 import { useLiveSearch } from '@/composables/useLiveSearch';
 import { useToast } from '@/composables/useToast';
 import { Head, router } from '@inertiajs/vue3';
+import { Plus } from '@lucide/vue';
 
 const props = defineProps({
     project: Object,
@@ -129,7 +130,9 @@ const onDrop = (col) => {
                 <div class="flex gap-2">
                     <AppButton variant="secondary" :href="route('projects.tasks.import.create', project.id)">Import</AppButton>
                     <AppButton variant="secondary" :href="route('projects.tasks.export.create', project.id)">Export</AppButton>
-                    <AppButton variant="primary" @click="openCreateTask('todo')">+ Tambah Task</AppButton>
+                    <AppButton variant="primary" @click="openCreateTask('todo')">
+                        <Plus :size="14" :stroke-width="2.5" /> Tambah Task
+                    </AppButton>
                 </div>
             </template>
         </ProjectDetailTabs>
@@ -138,30 +141,31 @@ const onDrop = (col) => {
             <div
                 v-for="col in columns"
                 :key="col.key"
-                class="rounded-2xl p-2 transition"
+                class="rounded-card border-2 p-2 transition-all duration-200 ease-out"
                 :class="dragOverColumnKey === col.key
-                    ? 'border-2 border-dashed border-accent bg-accent-tint scale-[1.01] shadow-inner'
-                    : 'border-2 border-transparent'"
+                    ? 'border-dashed border-accent bg-accent-tint scale-[1.01] shadow-inner'
+                    : 'border-transparent'"
                 @dragover.prevent="dragOverColumnKey = col.key"
                 @dragleave="onColumnDragLeave($event)"
                 @drop="onDrop(col)"
             >
                 <div class="mb-3 flex items-center gap-2">
-                    <span class="text-[13px] font-extrabold">{{ col.label }}</span>
-                    <span class="rounded-full bg-neutral-tint px-2 py-0.5 text-[11px] font-bold text-secondary">
+                    <span class="font-display text-[13px] font-semibold">{{ col.label }}</span>
+                    <span class="rounded-chip bg-neutral-tint px-2 py-0.5 text-[11px] font-bold text-secondary">
                         {{ col.tasks.length }}
                     </span>
                 </div>
 
                 <div class="flex flex-col gap-2.5">
                     <div
-                        v-for="task in col.tasks"
+                        v-for="(task, index) in col.tasks"
                         :key="task.id"
                         draggable="true"
-                        class="block cursor-grab rounded-card-sm border bg-white p-3.5 transition active:cursor-grabbing"
+                        class="animate-stagger-in block cursor-grab rounded-card-sm border bg-white p-3.5 transition-all duration-150 ease-out active:cursor-grabbing"
                         :class="draggingTaskId === task.id
                             ? 'scale-[0.97] border-dashed border-accent/50 opacity-50 shadow-none'
-                            : 'border-border opacity-100 shadow-sm hover:border-accent/40 hover:shadow-md'"
+                            : 'border-border opacity-100 shadow-card hover:border-accent/40 hover:shadow-popover'"
+                        :style="{ animationDelay: `${index * 40}ms` }"
                         @dragstart="onDragStart($event, task)"
                         @dragend="onDragEnd"
                         @click="openEditTask(task)"
@@ -187,10 +191,10 @@ const onDrop = (col) => {
                     </p>
 
                     <button
-                        class="rounded-card-sm border border-dashed border-border py-2 text-xs font-semibold text-secondary transition hover:border-accent/40 hover:text-accent-dark"
+                        class="flex items-center justify-center gap-1 rounded-card-sm border border-dashed border-border py-2 text-xs font-semibold text-secondary transition-colors duration-150 ease-out hover:border-accent/40 hover:text-accent-dark"
                         @click="openCreateTask(col.key)"
                     >
-                        + Tambah task
+                        <Plus :size="13" :stroke-width="2.5" /> Tambah task
                     </button>
                 </div>
             </div>

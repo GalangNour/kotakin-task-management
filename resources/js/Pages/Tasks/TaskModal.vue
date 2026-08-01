@@ -13,6 +13,7 @@ import Badge from '@/Components/Badge.vue';
 import AuditTrail from '@/Components/AuditTrail.vue';
 import { useToast } from '@/composables/useToast';
 import { useConfirm } from '@/composables/useConfirm';
+import { X, MessageSquare, Paperclip, History as HistoryIcon, Send, Upload, Trash2, FileText } from '@lucide/vue';
 
 const props = defineProps({
     show: { type: Boolean, default: false },
@@ -179,64 +180,84 @@ const deleteAttachment = (attachment) => {
 const attachments = computed(() => detail.value?.task?.attachments ?? []);
 const comments = computed(() => detail.value?.task?.comments ?? []);
 const audits = computed(() => detail.value?.audits ?? []);
+
+const TABS = ['detail', 'comments', 'attachments', 'history'];
+const tabIndex = computed(() => TABS.indexOf(activeTab.value));
+
+const priorityIndicatorClass = {
+    low: 'bg-neutral',
+    medium: 'bg-warning',
+    high: 'bg-danger',
+};
 </script>
 
 <template>
     <Modal :show="show" max-width="2xl" @close="close">
         <div class="p-6">
             <div class="mb-4 flex items-center justify-between">
-                <div class="text-lg font-extrabold">{{ mode === 'edit' ? 'Edit Task' : 'Tambah Task' }}</div>
-                <button class="text-xl leading-none text-secondary hover:text-ink" @click="close">&times;</button>
+                <div class="font-display text-lg font-semibold">{{ mode === 'edit' ? 'Edit Task' : 'Tambah Task' }}</div>
+                <button class="rounded-control p-1 text-secondary transition-colors duration-150 ease-out hover:bg-neutral-tint hover:text-ink" @click="close">
+                    <X :size="18" :stroke-width="2.25" />
+                </button>
             </div>
 
-            <div v-if="mode === 'edit'" class="mb-5 flex gap-1 border-b border-border">
+            <div v-if="mode === 'edit'" class="relative mb-5 grid grid-cols-4 border-b border-border">
                 <button
-                    class="px-3.5 py-2.5 text-[13px] font-bold transition"
-                    :class="activeTab === 'detail' ? 'border-b-2 border-accent text-accent-dark' : 'border-b-2 border-transparent text-secondary hover:text-ink'"
+                    class="flex items-center justify-center gap-1.5 px-2 py-2.5 text-[13px] font-bold transition-colors duration-150 ease-out"
+                    :class="activeTab === 'detail' ? 'text-accent-dark' : 'text-secondary hover:text-ink'"
                     @click="activeTab = 'detail'"
                 >
                     Detail
                 </button>
                 <button
-                    class="px-3.5 py-2.5 text-[13px] font-bold transition"
-                    :class="activeTab === 'comments' ? 'border-b-2 border-accent text-accent-dark' : 'border-b-2 border-transparent text-secondary hover:text-ink'"
+                    class="flex items-center justify-center gap-1.5 px-2 py-2.5 text-[13px] font-bold transition-colors duration-150 ease-out"
+                    :class="activeTab === 'comments' ? 'text-accent-dark' : 'text-secondary hover:text-ink'"
                     @click="activeTab = 'comments'"
                 >
-                    Komentar ({{ comments.length }})
+                    <MessageSquare :size="13" :stroke-width="2.25" /> ({{ comments.length }})
                 </button>
                 <button
-                    class="px-3.5 py-2.5 text-[13px] font-bold transition"
-                    :class="activeTab === 'attachments' ? 'border-b-2 border-accent text-accent-dark' : 'border-b-2 border-transparent text-secondary hover:text-ink'"
+                    class="flex items-center justify-center gap-1.5 px-2 py-2.5 text-[13px] font-bold transition-colors duration-150 ease-out"
+                    :class="activeTab === 'attachments' ? 'text-accent-dark' : 'text-secondary hover:text-ink'"
                     @click="activeTab = 'attachments'"
                 >
-                    Attachments ({{ attachments.length }})
+                    <Paperclip :size="13" :stroke-width="2.25" /> ({{ attachments.length }})
                 </button>
                 <button
-                    class="px-3.5 py-2.5 text-[13px] font-bold transition"
-                    :class="activeTab === 'history' ? 'border-b-2 border-accent text-accent-dark' : 'border-b-2 border-transparent text-secondary hover:text-ink'"
+                    class="flex items-center justify-center gap-1.5 px-2 py-2.5 text-[13px] font-bold transition-colors duration-150 ease-out"
+                    :class="activeTab === 'history' ? 'text-accent-dark' : 'text-secondary hover:text-ink'"
                     @click="activeTab = 'history'"
                 >
-                    History
+                    <HistoryIcon :size="13" :stroke-width="2.25" />
                 </button>
+
+                <span
+                    class="absolute bottom-0 h-0.5 w-1/4 bg-accent transition-transform duration-200 ease-in-out"
+                    :style="{ transform: `translateX(${tabIndex * 100}%)` }"
+                />
             </div>
 
             <!-- Detail tab -->
             <form v-if="activeTab === 'detail'" class="max-h-[60vh] space-y-4 overflow-y-auto pr-1" @submit.prevent="submit">
                 <div>
-                    <InputLabel for="title" value="Judul Task" class="!text-xs !font-semibold !text-secondary" />
+                    <InputLabel for="title" value="Judul Task" />
                     <TextInput id="title" v-model="form.title" class="mt-1 block w-full" required autofocus />
                     <InputError class="mt-1" :message="form.errors.title" />
                 </div>
 
                 <div>
-                    <InputLabel value="Status" class="!text-xs !font-semibold !text-secondary" />
-                    <div class="mt-1 flex gap-1.5">
+                    <InputLabel value="Status" />
+                    <div class="relative mt-1.5 grid grid-cols-3 gap-1 rounded-control bg-neutral-tint p-1">
+                        <span
+                            class="absolute inset-y-1 w-[calc(33.333%-0.16rem)] rounded-[5px] bg-accent shadow-card transition-transform duration-200 ease-in-out"
+                            :style="{ transform: `translateX(${STATUS_OPTIONS.findIndex((o) => o.key === form.status) * 100}%)` }"
+                        />
                         <button
                             v-for="opt in STATUS_OPTIONS"
                             :key="opt.key"
                             type="button"
-                            class="rounded-control px-3 py-1.5 text-[13px] font-bold transition"
-                            :class="form.status === opt.key ? 'bg-accent text-white' : 'bg-neutral-tint text-secondary hover:text-ink'"
+                            class="relative z-10 rounded-[5px] px-3 py-1.5 text-[13px] font-bold transition-colors duration-150 ease-out"
+                            :class="form.status === opt.key ? 'text-white' : 'text-secondary hover:text-ink'"
                             @click="form.status = opt.key"
                         >
                             {{ opt.label }}
@@ -246,16 +267,19 @@ const audits = computed(() => detail.value?.audits ?? []);
                 </div>
 
                 <div>
-                    <InputLabel value="Prioritas" class="!text-xs !font-semibold !text-secondary" />
-                    <div class="mt-1 flex gap-1.5">
+                    <InputLabel value="Prioritas" />
+                    <div class="relative mt-1.5 grid grid-cols-3 gap-1 rounded-control bg-neutral-tint p-1">
+                        <span
+                            class="absolute inset-y-1 w-[calc(33.333%-0.16rem)] rounded-[5px] shadow-card transition-transform duration-200 ease-in-out"
+                            :class="priorityIndicatorClass[form.priority]"
+                            :style="{ transform: `translateX(${PRIORITY_OPTIONS.findIndex((o) => o.key === form.priority) * 100}%)` }"
+                        />
                         <button
                             v-for="opt in PRIORITY_OPTIONS"
                             :key="opt.key"
                             type="button"
-                            class="rounded-control px-3 py-1.5 text-[13px] font-bold transition"
-                            :class="form.priority === opt.key
-                                ? { low: 'bg-neutral text-white', medium: 'bg-warning text-white', high: 'bg-danger text-white' }[opt.key]
-                                : 'bg-neutral-tint text-secondary hover:text-ink'"
+                            class="relative z-10 rounded-[5px] px-3 py-1.5 text-[13px] font-bold transition-colors duration-150 ease-out"
+                            :class="form.priority === opt.key ? 'text-white' : 'text-secondary hover:text-ink'"
                             @click="form.priority = opt.key"
                         >
                             {{ opt.label }}
@@ -265,7 +289,7 @@ const audits = computed(() => detail.value?.audits ?? []);
                 </div>
 
                 <div>
-                    <InputLabel for="assigned_to" value="Assignee" class="!text-xs !font-semibold !text-secondary" />
+                    <InputLabel for="assigned_to" value="Assignee" />
                     <SelectInput id="assigned_to" v-model="form.assigned_to" class="mt-1 block w-full">
                         <option value="">- Belum ditugaskan -</option>
                         <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
@@ -274,13 +298,13 @@ const audits = computed(() => detail.value?.audits ?? []);
                 </div>
 
                 <div>
-                    <InputLabel for="due_date" value="Due Date" class="!text-xs !font-semibold !text-secondary" />
+                    <InputLabel for="due_date" value="Due Date" />
                     <TextInput id="due_date" type="date" v-model="form.due_date" class="mt-1 block w-full" />
                     <InputError class="mt-1" :message="form.errors.due_date" />
                 </div>
 
                 <div>
-                    <InputLabel for="description" value="Deskripsi" class="!text-xs !font-semibold !text-secondary" />
+                    <InputLabel for="description" value="Deskripsi" />
                     <Textarea id="description" v-model="form.description" class="mt-1 block w-full" rows="3" />
                     <InputError class="mt-1" :message="form.errors.description" />
                 </div>
@@ -310,7 +334,7 @@ const audits = computed(() => detail.value?.audits ?? []);
                             @keydown.enter.prevent="addComment"
                         />
                         <AppButton variant="primary" :disabled="submittingComment || !commentDraft.trim()" @click="addComment">
-                            Kirim
+                            <Send :size="13" :stroke-width="2.25" /> Kirim
                         </AppButton>
                     </div>
                 </template>
@@ -319,7 +343,7 @@ const audits = computed(() => detail.value?.audits ?? []);
             <!-- Attachments tab -->
             <div v-else-if="activeTab === 'attachments'" class="max-h-[60vh] space-y-4 overflow-y-auto pr-1">
                 <div>
-                    <InputLabel value="Upload File (100KB - 500KB)" class="!text-xs !font-semibold !text-secondary" />
+                    <InputLabel value="Upload File (100KB - 500KB)" />
                     <div class="mt-2 flex items-center gap-3">
                         <input
                             ref="attachmentFileInput"
@@ -328,7 +352,7 @@ const audits = computed(() => detail.value?.audits ?? []);
                             @change="uploadForm.file = $event.target.files[0]"
                         />
                         <AppButton variant="primary" :disabled="uploadForm.processing || !uploadForm.file" @click="uploadAttachment">
-                            Upload
+                            <Upload :size="13" :stroke-width="2.25" /> Upload
                         </AppButton>
                     </div>
                     <InputError class="mt-2" :message="uploadForm.errors.file" />
@@ -340,8 +364,8 @@ const audits = computed(() => detail.value?.audits ?? []);
                         :key="attachment.id"
                         class="flex items-center gap-3 border-b border-divider px-4 py-3 text-[13px] last:border-b-0"
                     >
-                        <a :href="`/storage/${attachment.file_path}`" target="_blank" class="flex-1 font-bold text-accent hover:text-accent-dark">
-                            {{ attachment.file_name }}
+                        <a :href="`/storage/${attachment.file_path}`" target="_blank" class="flex flex-1 items-center gap-1.5 font-bold text-accent hover:text-accent-dark">
+                            <FileText :size="14" :stroke-width="2.25" class="shrink-0" /> {{ attachment.file_name }}
                         </a>
                         <span class="text-xs text-secondary">{{ attachment.file_size }} KB</span>
                         <button @click="toggleVerified(attachment)">
@@ -350,7 +374,9 @@ const audits = computed(() => detail.value?.audits ?? []);
                                 :tone="attachment.is_verified ? 'success' : 'neutral'"
                             />
                         </button>
-                        <button @click="deleteAttachment(attachment)" class="font-semibold text-danger hover:underline">Hapus</button>
+                        <button @click="deleteAttachment(attachment)" class="text-secondary transition-colors duration-150 ease-out hover:text-danger">
+                            <Trash2 :size="14" :stroke-width="2.25" />
+                        </button>
                     </div>
                     <p v-if="attachments.length === 0" class="py-6 text-center text-sm text-secondary">Belum ada attachment.</p>
                 </div>
@@ -363,8 +389,8 @@ const audits = computed(() => detail.value?.audits ?? []);
             </div>
 
             <div class="mt-6 flex items-center justify-between border-t border-divider pt-4">
-                <button v-if="mode === 'edit'" class="text-[13px] font-semibold text-danger hover:underline" @click="deleteTask">
-                    Hapus Task
+                <button v-if="mode === 'edit'" class="flex items-center gap-1.5 text-[13px] font-semibold text-danger hover:underline" @click="deleteTask">
+                    <Trash2 :size="13" :stroke-width="2.25" /> Hapus Task
                 </button>
                 <span v-else />
 

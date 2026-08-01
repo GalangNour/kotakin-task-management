@@ -9,6 +9,7 @@ import RoleModal from '@/Pages/Roles/RoleModal.vue';
 import { useLiveSearch } from '@/composables/useLiveSearch';
 import { useConfirm } from '@/composables/useConfirm';
 import { Head, router } from '@inertiajs/vue3';
+import { Plus, Pencil, Trash2 } from '@lucide/vue';
 
 const props = defineProps({
     roles: Object,
@@ -46,17 +47,19 @@ const closeRoleModal = () => {
     <AuthenticatedLayout eyebrow="Kelola" title="Roles">
         <template #actions>
             <SearchInput v-model="search" placeholder="Cari role..." />
-            <AppButton variant="primary" @click="openCreateRole">+ Tambah Role</AppButton>
+            <AppButton variant="primary" @click="openCreateRole">
+                <Plus :size="14" :stroke-width="2.5" /> Tambah Role
+            </AppButton>
         </template>
 
         <div class="grid gap-[18px]" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr))">
             <div
                 v-for="role in roles.data"
                 :key="role.id"
-                class="rounded-card border border-border bg-white p-5"
+                class="rounded-card border border-border bg-white p-5 shadow-card"
             >
                 <div class="mb-2.5 flex items-center justify-between">
-                    <span class="text-base font-extrabold">{{ role.name }}</span>
+                    <span class="font-display text-base font-semibold">{{ role.name }}</span>
                     <Badge :label="role.is_active ? 'Aktif' : 'Nonaktif'" :tone="role.is_active ? 'success' : 'neutral'" />
                 </div>
                 <div class="mb-3.5 text-xs text-secondary">{{ role.users_count }} user</div>
@@ -73,8 +76,12 @@ const closeRoleModal = () => {
                     </span>
                 </div>
                 <div class="flex items-center gap-3.5 text-[13px] font-semibold">
-                    <button @click="openEditRole(role)" class="text-ink hover:text-accent">Edit Role</button>
-                    <button @click="destroy(role)" class="text-danger hover:underline">Hapus</button>
+                    <button @click="openEditRole(role)" class="flex items-center gap-1 text-ink transition-colors duration-150 ease-out hover:text-accent">
+                        <Pencil :size="12" :stroke-width="2.25" /> Edit Role
+                    </button>
+                    <button @click="destroy(role)" class="flex items-center gap-1 text-danger hover:underline">
+                        <Trash2 :size="12" :stroke-width="2.25" /> Hapus
+                    </button>
                 </div>
             </div>
 
